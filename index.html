@@ -14,7 +14,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
-    <style>
+        <style>
         :root {
             /* Light theme variables */
             --bg-primary: #ffffff;
@@ -293,6 +293,144 @@
             transition: all 0.3s ease;
         }
 
+        /* Email link specific styling */
+        .email-link {
+            position: relative;
+            cursor: pointer;
+        }
+
+        .email-link:hover::after {
+            content: "Check console for email address";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            white-space: nowrap;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 12px var(--shadow);
+            z-index: 1000;
+            margin-bottom: 0.5rem;
+        }
+
+        .email-link:hover::before {
+            content: "";
+            position: absolute;
+            bottom: 100%;
+            left: 50%;
+            transform: translateX(-50%);
+            border: 5px solid transparent;
+            border-top-color: var(--bg-secondary);
+            margin-bottom: -0.5rem;
+            z-index: 1000;
+        }
+
+        /* Custom notification modal */
+        .notification-modal {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background-color: var(--bg-primary);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 20px 40px var(--shadow);
+            z-index: 10000;
+            max-width: 400px;
+            width: 90%;
+            text-align: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .notification-modal.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .notification-modal h3 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+            font-size: 1.25rem;
+            font-weight: 600;
+        }
+
+        .notification-modal p {
+            color: var(--text-secondary);
+            margin-bottom: 1.5rem;
+            line-height: 1.6;
+        }
+
+        .notification-modal .icon {
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        .notification-modal .steps {
+            background-color: var(--bg-secondary);
+            border-radius: 8px;
+            padding: 1rem;
+            margin-bottom: 1.5rem;
+            text-align: left;
+        }
+
+        .notification-modal .steps ol {
+            color: var(--text-primary);
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .notification-modal .steps li {
+            margin-bottom: 0.5rem;
+            font-size: 0.9rem;
+        }
+
+        .notification-modal .steps li:last-child {
+            margin-bottom: 0;
+        }
+
+        .notification-modal .close-btn {
+            background-color: var(--accent);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: all 0.3s ease;
+        }
+
+        .notification-modal .close-btn:hover {
+            background-color: var(--accent);
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px var(--shadow);
+        }
+
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 9999;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .modal-overlay.show {
+            opacity: 1;
+            visibility: visible;
+        }
+
         /* Action buttons */
         .action-buttons {
             display: flex;
@@ -453,6 +591,9 @@
                 <a href="https://github.com/xer0times" target="_blank" rel="noopener noreferrer" class="social-link">
                     <i class="fab fa-github"></i>
                 </a>
+	    	<a href="#" class="social-link email-link" id="email-link" title="Click to reveal email in console">
+                    <i class="fas fa-envelope"></i>
+                </a>
                 <a href="https://hamidrez.ae/blog" target="_blank" rel="noopener noreferrer" class="social-link">
                     <i class="fas fa-blog"></i>
                 </a>
@@ -470,7 +611,15 @@
             </div>
         </main>
     </div>
-    
+	
+    <!-- Notification Modal -->
+    <div class="modal-overlay" id="modal-overlay"></div>
+    <div class="notification-modal" id="notification-modal">
+        <div class="icon">🔍</div>
+        <h3>Email Address Available</h3>
+        <p>The email address has been logged to the browser console.</p>
+        <button class="close-btn" id="close-modal">Got it!</button>
+    </div>
     <script>
         // Theme switching functionality
         document.addEventListener('DOMContentLoaded', function() {
@@ -522,6 +671,54 @@
                 actionButtons.style.opacity = '1';
                 actionButtons.style.transform = 'translateY(0)';
             }, 500);
+		
+            // Email functionality
+            const emailLink = document.getElementById('email-link');
+            const modal = document.getElementById('notification-modal');
+            const modalOverlay = document.getElementById('modal-overlay');
+            const closeBtn = document.getElementById('close-modal');
+            const hexEmail = '70696e674068616d696472657a2e6165'; // abc@abc.com in hex
+            
+            emailLink.addEventListener('click', function(e) {
+                e.preventDefault();
+                
+                // Decrypt hex to string
+                const email = hexToString(hexEmail);
+                
+                // Show modal
+                modal.classList.add('show');
+                modalOverlay.classList.add('show');
+                
+                // Log to console
+                console.log('%c📧 Email Address:', 'color: #3b82f6; font-weight: bold; font-size: 14px;');
+                console.log('%c' + email, 'color: #10b981; font-size: 16px; font-weight: bold;');
+                console.log('%c💡 Tip: You can copy this email address', 'color: #f59e0b; font-size: 12px;');
+            });
+
+            // Close modal functionality
+            function closeModal() {
+                modal.classList.remove('show');
+                modalOverlay.classList.remove('show');
+            }
+
+            closeBtn.addEventListener('click', closeModal);
+            modalOverlay.addEventListener('click', closeModal);
+
+            // Close modal with Escape key
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'Escape' && modal.classList.contains('show')) {
+                    closeModal();
+                }
+            });
+
+            // Function to convert hex to string
+            function hexToString(hex) {
+                let str = '';
+                for (let i = 0; i < hex.length; i += 2) {
+                    str += String.fromCharCode(parseInt(hex.substr(i, 2), 16));
+                }
+                return str;
+            }
         });
     </script>
 </body>
