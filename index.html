@@ -680,13 +680,14 @@
             const modalOverlay = document.getElementById('modal-overlay');
             const closeBtn = document.getElementById('close-modal');
             const hexEmail = '70696e674068616d696472657a2e6165';
-            
+            const keypgp = '68747470733a2f2f6b6579732e6f70656e7067702e6f72672f7365617263683f713d70696e6725343068616d696472657a2e6165'
+		
             emailLink.addEventListener('click', function(e) {
                 e.preventDefault();
                 
                 // Decrypt hex to string
                 const email = hexToString(hexEmail);
-                
+                const email_key = hexToString(keypgp);
                 // Show modal
                 modal.classList.add('show');
                 modalOverlay.classList.add('show');
@@ -694,6 +695,7 @@
                 // Log to console
                 console.log('%c📧 Email Address:', 'color: #3b82f6; font-weight: bold; font-size: 14px;');
                 console.log('%c' + email, 'color: #10b981; font-size: 16px; font-weight: bold;');
+		console.log('GPG Key: ' + email_key);
                 console.log('%c💡 Tip: You can copy this email address', 'color: #f59e0b; font-size: 12px;');
             });
 
