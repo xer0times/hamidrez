@@ -666,18 +666,20 @@
                 socialLinks.style.opacity = '1';
                 socialLinks.style.transform = 'translateY(0)';
             }, 300);
-            
-            setTimeout(() => {
-                actionButtons.style.opacity = '1';
-                actionButtons.style.transform = 'translateY(0)';
-            }, 500);
+		
+            if (actionButtons) {
+	            setTimeout(() => {
+	                actionButtons.style.opacity = '1';
+	                actionButtons.style.transform = 'translateY(0)';
+	            }, 500);
+	    }
 		
             // Email functionality
             const emailLink = document.getElementById('email-link');
             const modal = document.getElementById('notification-modal');
             const modalOverlay = document.getElementById('modal-overlay');
             const closeBtn = document.getElementById('close-modal');
-            const hexEmail = '70696e674068616d696472657a2e6165'; // abc@abc.com in hex
+            const hexEmail = '70696e674068616d696472657a2e6165';
             
             emailLink.addEventListener('click', function(e) {
                 e.preventDefault();
